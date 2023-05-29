@@ -1,5 +1,9 @@
 #pragma once
 #include <ncurses.h>
+#include <string>
+
+
+using namespace std;
 
 
 class Player {
@@ -11,8 +15,10 @@ class Player {
     void mvPlayerDown();
     void mvPlayerLeft();
     void mvPlayerRight();
-    void setMaxWindowSize(int xmax, int ymax);
+    void getMaxWindowSize(int xmax, int ymax);
     int getmv();
+    void getCoordinates();
+    void checkForCollisions(string dir);
 
 
   private:
@@ -20,4 +26,7 @@ class Player {
     int _x,_y;
     WINDOW *_curwin;
     int _xMax, _yMax;
+    int _xMove, _yMove;
+    int _x_coord, _y_coord;
+    string _direction;
 };
