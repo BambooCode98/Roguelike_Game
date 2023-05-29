@@ -20,7 +20,7 @@ int main() {
   cbreak();
   noecho();
   clear();
-  curs_set(0);
+  // curs_set(0);
 
   
   WINDOW *display = newwin(LINES, COLS, 0, 0);
@@ -30,7 +30,7 @@ int main() {
   string level_ascii;
   int num_of_rows, num_of_cols;
 
-  ifstream levelFiles("levels/level2.txt");
+  ifstream levelFiles("levels/level1.txt");
   if(levelFiles.is_open()) {
 
     while(getline(levelFiles,level_ascii)) {

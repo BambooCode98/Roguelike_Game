@@ -24,15 +24,11 @@ void Player::getMaxWindowSize(int xmax, int ymax) {
 }
 
 void Player::mvPlayerUp() {
-  mvwaddch(_curwin,_y,_x,' ');
+  mvwaddch(_curwin,_y,_x,'.');
   _y--;
-  checkForCollisions("up");
-
-  // _direction = "up";
-  // checkForCollisions("_y", "up");
-  // if(winch(_curwin) == '#') {
-  //   _y+=1;
-  // }
+  // _y_coord--;
+  checkForWalls("up");
+  checkForObjects();
 
 
   //prevent going offscreen
@@ -40,23 +36,21 @@ void Player::mvPlayerUp() {
 }
 
 void Player::mvPlayerDown() {
-  mvwaddch(_curwin,_y,_x,' ');
+  mvwaddch(_curwin,_y,_x,'.');
   _y++;
-  // checkForCollisions();
-  // chtype yselect = mvwinch(_curwin,0,0)&A_CHARTEXT;
-  // if( yselect== char(35)) {
-  //   wprintw(_curwin, "%d", mvwinch(_curwin,1,0)&A_CHARTEXT);
-  //   _y--;
-  // }
-  checkForCollisions("down");
+  checkForWalls("down");
+  checkForObjects();
+
   //prevent going offscreen
   if(_y >= _yMax-2) _y = _yMax-2;
 }
 
 void Player::mvPlayerLeft() {
-  mvwaddch(_curwin,_y,_x,' ');
+  mvwaddch(_curwin,_y,_x,'.');
   _x--;
-  checkForCollisions("left");
+  // _x_coord--;
+  checkForWalls("left");
+  checkForObjects();
 
 
   //prevent going offscreen
@@ -64,15 +58,11 @@ void Player::mvPlayerLeft() {
 }
 
 void Player::mvPlayerRight() {
-  mvwaddch(_curwin,_y,_x,' ');
+  mvwaddch(_curwin,_y,_x,'.');
   _x++;
-  // _direction = "right";
-  // checkForCollisions("_x", "right");
-  // if(winch(_curwin) == '#') {
-  //   _x-=1;
-  // }
-  checkForCollisions("right");
-
+  // _x_coord++;
+  checkForWalls("right");
+  checkForObjects();
 
 
   //prevent going offscreen
@@ -88,41 +78,52 @@ int Player::getmv() {
       wrefresh(_curwin);
     } else if (key == KEY_RIGHT) {
       mvPlayerRight();
-
     } else if (key == KEY_LEFT) {
       mvPlayerLeft();
-      
     }
     return key;
 }
 
 void Player::getCoordinates() {
   getyx(_curwin, _y_coord, _x_coord);
+  mvwprintw(_curwin,_yMax/1.5,_xMax/1.5, "_y_coord: %d _x_coord: %d", _y_coord, _x_coord);
 }
 
-void Player::checkForCollisions(string dir) {
+void Player::checkForObjects() {
+  int object = mvwinch(_curwin,_y,_x);
+  mvwprintw(_curwin,_yMax/1.2,_xMax/1.5,"object num: %d", object);
+  // if(object == int('E')) {
+  //   mvwprintw(_curwin,_yMax/1.1,_xMax/1.5,"Hit enemy");
+  // }
+  switch(object) {
+    case int('E'):
+      mvwprintw(_curwin,_yMax/1.1,_xMax/1.5,"Hit enemy");
+      break;
+    case int('P'):
+      mvwprintw(_curwin,_yMax/1.1,_xMax/1.5,"Potion Acquired!");
+      break;
+  }
+}
+
+void Player::checkForWalls(string dir) {
+  getCoordinates();
   int wall = mvwinch(_curwin,_y,_x) & A_CHARTEXT;
   // wprintw(_curwin,"%d", wall);
-  // wrefresh(_curwin);
+  mvwprintw(_curwin,_yMax/1.3,_xMax/1.5, "_y: %d _x: %d", _y, _x);
+
   if(dir == "down" && wall == '#') {
     _y--;
+    _y_coord--;
   } else if(dir == "up" && wall == '#') {
     _y++;
+    _y_coord++;
   } else if(dir == "right" && wall == '#') {
     _x--;
+    _x_coord--;
   } else if(dir == "left" && wall == '#') {
     _x++;
+    _x_coord++;
   }
-  // switch(wall) {
-  //   case '#':
-  //     _y--;
-  //     // wrefresh(_curwin);
-  //     // wprintw(_curwin,"hi");
-  //   break;
-  // }
-  // if(_y_coord+2 && int(wall)) {
-  //   _y--;
-  // }
 }
 
 void Player::displayToken() {

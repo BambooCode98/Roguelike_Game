@@ -18,7 +18,8 @@ class Player {
     void getMaxWindowSize(int xmax, int ymax);
     int getmv();
     void getCoordinates();
-    void checkForCollisions(string dir);
+    void checkForWalls(string dir);
+    void checkForObjects();
 
 
   private:
