@@ -7,24 +7,24 @@
 using namespace std;
 
 
-class Player {
+class Enemy {
   public:
 
-    Player(int y, int x, char playerToken, WINDOW *window);
+    Enemy(int y, int x, char enemyToken, WINDOW *window);
     void displayToken();
     void mvPlayerUp();
     void mvPlayerDown();
     void mvPlayerLeft();
     void mvPlayerRight();
     void getMaxWindowSize(int xmax, int ymax);
-    int  getmv();
+    // int getmv();
     void getCoordinates();
     void checkForWalls(string dir);
     void checkForObjects();
-    vector<string> updatePlayerInventory();
-    void useItem(int num);
-    void addHealth(string obj);
-    int  getHealth();
+    // vector<string> updatePlayerInventory();
+    // void useItem(int num);
+    void changeHealth(string obj);
+    int getHealth();
 
 
   private:
@@ -35,11 +35,7 @@ class Player {
     int _xMove, _yMove;
     int _x_coord, _y_coord;
     string _direction;
-    string _item;
-    vector<string> _itemList;
 
     //status variables
     int _health = 20;
-    int _maxHealth = 20;
-    bool _fullHealth = true;
 };

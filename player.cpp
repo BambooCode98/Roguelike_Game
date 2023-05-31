@@ -1,9 +1,12 @@
 #include <string>
+#include <algorithm>
+#include <vector>
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
 #include <ncurses.h>
 #include "player.h"
+
 
 using namespace std;
 
@@ -71,45 +74,64 @@ void Player::mvPlayerRight() {
 
 int Player::getmv() {
   int key = wgetch(_curwin);
+      mvwprintw(_curwin,_yMax-5,_xMax-5, "%d",key);
       if(key == KEY_UP) {
       mvPlayerUp();
     } else if (key == KEY_DOWN) {
       mvPlayerDown();
-      wrefresh(_curwin);
+      // wrefresh(_curwin);
     } else if (key == KEY_RIGHT) {
       mvPlayerRight();
     } else if (key == KEY_LEFT) {
       mvPlayerLeft();
+    } else if (key == int('1')) {
+      useItem(1);
+    } else if (key == int('2')) {
+      useItem(2);
+    } else if (key == int('3')) {
+      useItem(3);
+    } else if (key == int('4')) {
+      useItem(4);
+    } else if (key == int('5')) {
+      useItem(5);
+    } else if (key == int('6')) {
+      useItem(6);
+    } else if (key == int('7')) {
+      useItem(7);
     }
     return key;
 }
 
 void Player::getCoordinates() {
   getyx(_curwin, _y_coord, _x_coord);
-  mvwprintw(_curwin,_yMax/1.5,_xMax/1.5, "_y_coord: %d _x_coord: %d", _y_coord, _x_coord);
+  // mvwprintw(_curwin,_yMax/1.5,_xMax/1.5, "_y_coord: %d _x_coord: %d", _y_coord, _x_coord);
 }
 
 void Player::checkForObjects() {
   int object = mvwinch(_curwin,_y,_x);
-  mvwprintw(_curwin,_yMax/1.2,_xMax/1.5,"object num: %d", object);
-  // if(object == int('E')) {
-  //   mvwprintw(_curwin,_yMax/1.1,_xMax/1.5,"Hit enemy");
-  // }
   switch(object) {
     case int('E'):
-      mvwprintw(_curwin,_yMax/1.1,_xMax/1.5,"Hit enemy");
+      mvwprintw(_curwin,_yMax-5,5,"Hit enemy.");
+      wrefresh(_curwin);
       break;
     case int('P'):
-      mvwprintw(_curwin,_yMax/1.1,_xMax/1.5,"Potion Acquired!");
+      mvwprintw(_curwin,_yMax-5,5,"Potion Acquired!");
+      _itemList.push_back("Potion");
+      wrefresh(_curwin);
+      break;
+    case int('S'):
+      mvwprintw(_curwin,_yMax-5,5,"Sword Acquired!");
+      _itemList.push_back("Sword");
+      wrefresh(_curwin);
       break;
   }
 }
 
 void Player::checkForWalls(string dir) {
-  getCoordinates();
+  // getCoordinates();
   int wall = mvwinch(_curwin,_y,_x) & A_CHARTEXT;
   // wprintw(_curwin,"%d", wall);
-  mvwprintw(_curwin,_yMax/1.3,_xMax/1.5, "_y: %d _x: %d", _y, _x);
+  // mvwprintw(_curwin,_yMax/1.3,_xMax/1.5, "_y: %d _x: %d", _y, _x);
 
   if(dir == "down" && wall == '#') {
     _y--;
@@ -131,3 +153,46 @@ void Player::displayToken() {
   wrefresh(_curwin);
 }
 
+
+
+
+vector<string> Player::updatePlayerInventory()  {
+  // vector<string> items;
+  // _itemList.push_back(_item);
+  // refresh();
+  for(string i: _itemList) {
+    // mvwclrtoeol(_curwin);
+    mvwprintw(_curwin,_yMax-1,5,"vector: %s, length: %d, delete when done.", i.c_str(), _itemList.size());
+
+  }
+
+  return _itemList;
+}
+
+
+void Player::useItem(int num) {
+  if(_itemList.size() == 0) {
+    mvwprintw(_curwin,LINES/1.4,COLS/1.75,"There is nothing in your inventory!");
+  } else {
+    string item;
+    item = _itemList[num-1];
+    mvwprintw(_curwin, _yMax-3, 5,"You used the %s.", _itemList[num-1].c_str());
+    _itemList.erase(_itemList.begin()+(num-1));
+    if(item == "Potion" && _fullHealth) {
+      addHealth("Potion");
+    }
+  }
+}
+
+
+void Player::addHealth(string obj = NULL) {
+  if(obj == "Potion" && _health < _maxHealth) {
+    _health+=5;
+  } else {
+    mvwprintw(_curwin,_yMax-4,5,"Already have max health!");
+  }
+}
+
+int Player::getHealth() {
+  return _health;
+}

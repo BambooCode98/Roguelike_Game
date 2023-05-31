@@ -1,10 +1,11 @@
 #include <string>
 #include <cstdlib>
-// #include <cstdio>
+#include <vector>
 #include <iostream>
 #include <fstream>
 #include <ncurses.h>
 #include "player.h"
+#include "game.h"
 
 
 using namespace std;
@@ -20,11 +21,13 @@ int main() {
   cbreak();
   noecho();
   clear();
-  // curs_set(0);
+  curs_set(0);
 
   
   WINDOW *display = newwin(LINES, COLS, 0, 0);
   box(display, 0, 0);
+  wborder(display,' ',' ',' ',' ',' ',' ',' ',' ');
+  
   refresh();
 
   string level_ascii;
@@ -48,15 +51,26 @@ int main() {
   keypad(display, true);
 
   Player player(1,1,'@',display);
+  Game game;
+    // wrefresh(display);
 
   player.getMaxWindowSize(maxX, maxY);
+  game.createHUD();
+  game.createInventory();
 
+    refresh();
   while(true) {
     player.getmv();
+    game.updateInventoryWindow(player.updatePlayerInventory());
+    // refresh();
+    game.updateStatusBar(player.getHealth());
     player.displayToken();
-    wrefresh(display);
+    // wrefresh(display);
+  // mvwprintw(display,LINES/2,COLS/2,"Lines: %d, Cols: %d", LINES,COLS);
   }
 
+  game.delHUDWindow();
+  game.delMenuWindow();
   delwin(display);
   endwin();
 
