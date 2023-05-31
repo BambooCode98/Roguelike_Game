@@ -113,6 +113,7 @@ void Player::checkForObjects() {
     case int('E'):
       mvwprintw(_curwin,_yMax-5,5,"Hit enemy.");
       wrefresh(_curwin);
+      _health-=5;
       break;
     case int('P'):
       mvwprintw(_curwin,_yMax-5,5,"Potion Acquired!");
@@ -176,10 +177,13 @@ void Player::useItem(int num) {
   } else {
     string item;
     item = _itemList[num-1];
-    mvwprintw(_curwin, _yMax-3, 5,"You used the %s.", _itemList[num-1].c_str());
-    _itemList.erase(_itemList.begin()+(num-1));
-    if(item == "Potion" && _fullHealth) {
+
+    if(item == "Potion" && _health < _maxHealth) {
       addHealth("Potion");
+      mvwprintw(_curwin, _yMax-3, 5,"You used the %s.", _itemList[num-1].c_str());
+      _itemList.erase(_itemList.begin()+(num-1));
+    } else {
+      mvwprintw(_curwin,_yMax-4,5,"Can't use potion!");
     }
   }
 }
