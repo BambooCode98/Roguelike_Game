@@ -74,7 +74,7 @@ void Player::mvPlayerRight() {
 
 int Player::getmv() {
   int key = wgetch(_curwin);
-      mvwprintw(_curwin,_yMax-5,_xMax-5, "%d",key);
+      // mvwprintw(_curwin,_yMax-5,_xMax-5, "%d",key);
       if(key == KEY_UP) {
       mvPlayerUp();
     } else if (key == KEY_DOWN) {
@@ -111,19 +111,32 @@ void Player::checkForObjects() {
   int object = mvwinch(_curwin,_y,_x);
   switch(object) {
     case int('E'):
+      mvwprintw(_curwin,_yMax-5,5,"                 ");
       mvwprintw(_curwin,_yMax-5,5,"Hit enemy.");
       wrefresh(_curwin);
       _health-=5;
       break;
     case int('P'):
-      mvwprintw(_curwin,_yMax-5,5,"Potion Acquired!");
-      _itemList.push_back("Potion");
-      wrefresh(_curwin);
+      if(_itemList.size() < 7) {
+        mvwprintw(_curwin,_yMax-5,5,"                 ");
+        mvwprintw(_curwin,_yMax-5,5,"Potion Acquired!");
+        _itemList.push_back("Potion");
+        wrefresh(_curwin);
+      } else {
+        mvwprintw(_curwin,_yMax-5,5,"                 ");
+        mvwprintw(_curwin,_yMax-5,5,"Empty your inventory first.");
+      }
       break;
     case int('S'):
-      mvwprintw(_curwin,_yMax-5,5,"Sword Acquired!");
-      _itemList.push_back("Sword");
-      wrefresh(_curwin);
+      if(_itemList.size() < 7) {
+        mvwprintw(_curwin,_yMax-5,5,"                 ");
+        mvwprintw(_curwin,_yMax-5,5,"Sword Acquired!");
+        _itemList.push_back("Sword");
+        wrefresh(_curwin);
+      } else {
+        mvwprintw(_curwin,_yMax-5,5,"                 ");
+        mvwprintw(_curwin,_yMax-5,5,"Empty your inventory first.");
+      }
       break;
   }
 }
@@ -161,11 +174,12 @@ vector<string> Player::updatePlayerInventory()  {
   // vector<string> items;
   // _itemList.push_back(_item);
   // refresh();
-  for(string i: _itemList) {
-    // mvwclrtoeol(_curwin);
-    mvwprintw(_curwin,_yMax-1,5,"vector: %s, length: %d, delete when done.", i.c_str(), _itemList.size());
+  // int r = 0;
+  //   mvwprintw(_curwin,LINES-_itemList.size(),5,"                       ");
+  // for(string i: _itemList) {
+  //   mvwprintw(_curwin,LINES-_itemList.size(),5,"vector: %s, length: %d", i.c_str(), _itemList.size());
 
-  }
+  // }
 
   return _itemList;
 }
@@ -177,13 +191,19 @@ void Player::useItem(int num) {
   } else {
     string item;
     item = _itemList[num-1];
-
+    
     if(item == "Potion" && _health < _maxHealth) {
       addHealth("Potion");
       mvwprintw(_curwin, _yMax-3, 5,"You used the %s.", _itemList[num-1].c_str());
       _itemList.erase(_itemList.begin()+(num-1));
-    } else {
+    } else if(item == "Potion" && _health >= _maxHealth) {
       mvwprintw(_curwin,_yMax-4,5,"Can't use potion!");
+    }
+    if(item == "Sword") {
+      addAttack("Sword");
+      addExp("Sword");
+      mvwprintw(_curwin, _yMax-3, 5,"You used the %s.", _itemList[num-1].c_str());
+      _itemList.erase(_itemList.begin()+(num-1));
     }
   }
 }
@@ -197,6 +217,26 @@ void Player::addHealth(string obj = NULL) {
   }
 }
 
+void Player::addAttack(string obj = NULL) {
+  if(obj == "Sword") {
+    _attack+=1;
+  }
+}
+
+void Player::addExp(string obj = NULL) {
+  if(obj == "Sword") {
+    _exp+=0.5;
+  }
+}
+
 int Player::getHealth() {
   return _health;
+}
+
+int Player::getAttack() {
+  return _attack;
+}
+
+int Player::getExp() {
+  return _exp;
 }

@@ -6,13 +6,14 @@
 #include <ncurses.h>
 #include "player.h"
 #include "game.h"
+#include "enemy.h"
 
 
 using namespace std;
 
 
 int main() {
-
+  bool end = false;
 
 
 
@@ -51,6 +52,7 @@ int main() {
   keypad(display, true);
 
   Player player(1,1,'@',display);
+  // Enemy monster(3,9,'M',display,10,5);
   Game game;
     // wrefresh(display);
 
@@ -58,15 +60,18 @@ int main() {
   game.createHUD();
   game.createInventory();
 
-    refresh();
-  while(true) {
+    // refresh();
+  while(!end) {
     player.getmv();
     game.updateInventoryWindow(player.updatePlayerInventory());
     // refresh();
-    game.updateStatusBar(player.getHealth());
+    game.updateStatusBar(player.getHealth(), player.getExp(), player.getAttack());
     player.displayToken();
+    // monster.displayToken();
     // wrefresh(display);
   // mvwprintw(display,LINES/2,COLS/2,"Lines: %d, Cols: %d", LINES,COLS);
+    end = game.gameOver(player.getHealth());
+
   }
 
   game.delHUDWindow();

@@ -24,7 +24,11 @@ class Player {
     vector<string> updatePlayerInventory();
     void useItem(int num);
     void addHealth(string obj);
+    void addAttack(string obj);
+    void addExp(string obj);
     int  getHealth();
+    int  getExp();
+    int  getAttack();
 
 
   private:
@@ -37,9 +41,12 @@ class Player {
     string _direction;
     string _item;
     vector<string> _itemList;
+    bool _inventory_full = false;
 
     //status variables
     int _health = 20;
     int _maxHealth = 20;
-    bool _fullHealth = true;
+    // bool _fullHealth = true;
+    int _attack = 1;
+    float _exp = 0;
 };
